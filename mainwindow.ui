@@ -27,13 +27,7 @@
        <widget class="QTableView" name="traceA"/>
        <widget class="QTableView" name="traceB"/>
       </widget>
-      <widget class="QTreeView" name="diffview">
-       <property name="font">
-        <font>
-         <family>Nimbus Mono L</family>
-        </font>
-       </property>
-      </widget>
+      <widget class="QTreeView" name="diffview"/>
      </widget>
     </item>
    </layout>

@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 #include "trace.h"
 #include "tracemodel.h"
-#include "flatdiffmodel.h"
+#include "difftreemodel.h"
 #include "difflinedelegate.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -19,9 +19,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::setFlatDiff(QVector<DiffNode>* diff)
 {
-    auto* m = new FlatDiffModel(this);
+    auto* m = new DiffTreeModel(this);
     m->setDiff(diff);
     ui->diffview->setItemDelegate(new DiffLineDelegate(this));
+    m->tv = ui->diffview;
     ui->diffview->setModel(m);
 }
 

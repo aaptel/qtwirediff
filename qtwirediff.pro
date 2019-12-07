@@ -29,17 +29,17 @@ SOURCES += \
     trace.cpp \
     diff.cpp \
     tracemodel.cpp \
-    flatdiffmodel.cpp \
-    difflinedelegate.cpp
+    difflinedelegate.cpp \
+    difftreemodel.cpp
 
 HEADERS += \
         mainwindow.h \
     trace.h \
     dtl/*.hpp \
     tracemodel.h \
-    flatdiffmodel.h \
     diff.h \
-    difflinedelegate.h
+    difflinedelegate.h \
+    difftreemodel.h
 
 FORMS += \
         mainwindow.ui

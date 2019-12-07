@@ -160,7 +160,7 @@ void Trace::Node::dump(int n)
 
 bool Trace::Node::operator==(const Node& rhs) const
 {
-    qDebug("node operator ===");
+    //qDebug("node operator ===");
     return name == rhs.name && val == rhs.val;
 }
 
