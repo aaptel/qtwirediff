@@ -4,6 +4,7 @@
 #include <QBuffer>
 #include <QDebug>
 
+
 Trace::Trace(QObject *parent) : QObject(parent)
 {
 
@@ -141,6 +142,7 @@ QByteArray* Trace::getPDML(int no)
     return cache_[no];
 }
 
+
 void Trace::Node::dump(int n)
 {
     {
@@ -154,10 +156,17 @@ void Trace::Node::dump(int n)
     }
 }
 
+
+
+bool Trace::Node::operator==(const Node& rhs) const
+{
+    qDebug("node operator ===");
+    return name == rhs.name && val == rhs.val;
+}
+
 static Trace::Node* parseNode(QXmlStreamReader& xml)
 {
     Trace::Node *n = new Trace::Node;
-
     if (!xml.isStartElement()) {
         qDebug("not at start element");
         throw Trace::ParseError();
@@ -166,6 +175,7 @@ static Trace::Node* parseNode(QXmlStreamReader& xml)
     if (xml.name() == "packet") {
         n->name = "root";
         n->val = "";
+        n->parent = nullptr;
     } else {
         if (xml.name() != "proto" && xml.name() != "field") {
             qDebug("not at <proto> or <field>");
@@ -177,7 +187,9 @@ static Trace::Node* parseNode(QXmlStreamReader& xml)
     }
 
     while (xml.readNextStartElement()) {
-        n->children.append(parseNode(xml));
+        Trace::Node* child = parseNode(xml);
+        child->parent = n;
+        n->children.append(child);
     }
 
     return n;

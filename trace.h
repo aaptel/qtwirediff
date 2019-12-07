@@ -20,11 +20,25 @@ public:
     };
 
     struct Node {
+        Node* parent;
         QString name;
         QString val;
         QVector<Node*> children;
 
+        bool isLeaf() const {return children.isEmpty();}
+        uint cached_hash;
+        uint hash();
         void dump(int n=0);
+        int depth() const {
+            const Node* p = parent;
+            int n = 0;
+            while (p) {
+                n++;
+                p = p->parent;
+            }
+            return n;
+        }
+        bool operator==(const Node& rhs) const;
     };
 
     class ParseError : public QtConcurrent::Exception
@@ -38,7 +52,8 @@ public:
     int loadTrace(const QString& fn);
     Node* getPacket(int no);
     void dump();
-
+    size_t getPacketCount() {return pkts_.size();}
+    const Summary& getSummary(int n) { return pkts_[n];}
 private:
     QString fn_;
     bool loaded_;    

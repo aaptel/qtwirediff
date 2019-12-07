@@ -24,10 +24,16 @@
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <widget class="QListView" name="listView"/>
-       <widget class="QListWidget" name="listWidget"/>
+       <widget class="QTableView" name="traceA"/>
+       <widget class="QTableView" name="traceB"/>
       </widget>
-      <widget class="QTreeView" name="treeView"/>
+      <widget class="QTreeView" name="diffview">
+       <property name="font">
+        <font>
+         <family>Nimbus Mono L</family>
+        </font>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>

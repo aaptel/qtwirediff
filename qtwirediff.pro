@@ -26,12 +26,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    trace.cpp
+    trace.cpp \
+    diff.cpp \
+    tracemodel.cpp \
+    flatdiffmodel.cpp \
+    difflinedelegate.cpp
 
 HEADERS += \
         mainwindow.h \
     trace.h \
-    dtl/*.hpp
+    dtl/*.hpp \
+    tracemodel.h \
+    flatdiffmodel.h \
+    diff.h \
+    difflinedelegate.h
 
 FORMS += \
         mainwindow.ui
