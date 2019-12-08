@@ -2,7 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "traceview.h"
 #include "diff.h"
+#include "diffview.h"
 
 class Trace;
 class QTableView;
@@ -16,15 +18,21 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    static MainWindow * instance;
     explicit MainWindow(QWidget *parent = 0);
-    void setTraceA(Trace* t);
-    void setTraceB(Trace* t);
-    void setFlatDiff(QVector<DiffNode>* diff);
+    QVector<DiffNode>* getDiff() { return &diff; }
+    void moveSelection(int dir);
     ~MainWindow();
+
+public slots:
+    void onPacketChange(TraceView* tv);
 
 private:
     Ui::MainWindow *ui;
-    void setTrace(Trace* t, QTableView *tv);
+    TraceView *traceLeft;
+    TraceView *traceRight;
+    DiffView *diffview;
+    QVector<DiffNode> diff;
 };
 
 #endif // MAINWINDOW_H

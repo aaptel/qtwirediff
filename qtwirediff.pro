@@ -30,7 +30,10 @@ SOURCES += \
     diff.cpp \
     tracemodel.cpp \
     difflinedelegate.cpp \
-    difftreemodel.cpp
+    difftreemodel.cpp \
+    traceview.cpp \
+    diffview.cpp \
+    keyeventfilter.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -39,7 +42,11 @@ HEADERS += \
     tracemodel.h \
     diff.h \
     difflinedelegate.h \
-    difftreemodel.h
+    difftreemodel.h \
+    traceview.h \
+    diffview.h \
+    keyeventfilter.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    traceview.ui

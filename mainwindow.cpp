@@ -1,15 +1,35 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "trace.h"
-#include "tracemodel.h"
-#include "difftreemodel.h"
-#include "difflinedelegate.h"
+#include "keyeventfilter.h"
+
+MainWindow * MainWindow::instance = nullptr;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    instance = this;
     ui->setupUi(this);
+    KeyEventFilter::install(this);
+
+    traceLeft = new TraceView(this);
+    traceRight = new TraceView(this);
+    diffview = new DiffView(this);
+    ui->traceSplitter->addWidget(traceLeft);
+    ui->traceSplitter->addWidget(traceRight);
+    ui->diffSplitter->addWidget(diffview);
+    traceLeft->show();
+    traceRight->show();
+
+    connect(traceLeft, &TraceView::packetChanged, this, &MainWindow::onPacketChange);
+    connect(traceRight, &TraceView::packetChanged, this, &MainWindow::onPacketChange);
+}
+
+void MainWindow::moveSelection(int dir)
+{
+    traceLeft->moveSelection(dir);
+    traceRight->moveSelection(dir);
 }
 
 MainWindow::~MainWindow()
@@ -17,27 +37,16 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::setFlatDiff(QVector<DiffNode>* diff)
+void MainWindow::onPacketChange(TraceView* tv)
 {
-    auto* m = new DiffTreeModel(this);
-    m->setDiff(diff);
-    ui->diffview->setItemDelegate(new DiffLineDelegate(this));
-    m->tv = ui->diffview;
-    ui->diffview->setModel(m);
-}
+    Trace::Node *left, *right;
+    left = traceLeft->getPacket();
+    right = traceRight->getPacket();
 
-void MainWindow::setTraceA(Trace* t) {
-    setTrace(t, ui->traceA);
-}
+    if (!left || !right)
+        return;
 
-void MainWindow::setTraceB(Trace* t) {
-    setTrace(t, ui->traceB);
-}
-
-void MainWindow::setTrace(Trace* t, QTableView* tv) {
-    TraceModel *tm = new TraceModel(this);
-    tm->setTrace(t);
-    tv->setModel(tm);
-    tv->horizontalHeader()->setVisible(true);
-    tv->show();
+    diff.clear();
+    computeDiff(diff, traceLeft->getPacket(), traceRight->getPacket());
+    diffview->updateDiff();
 }

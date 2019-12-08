@@ -54,8 +54,15 @@ public:
     void dump();
     size_t getPacketCount() {return pkts_.size();}
     const Summary& getSummary(int n) { return pkts_[n];}
+
+    QString getFilename() const { return fn_; }
+    bool isLoaded() const { return loaded_; }
+    QString getFilter() const { return filter_; }
+    void setFilter(const QString& s) { filter_ = s;}
+
 private:
     QString fn_;
+    QString filter_;
     bool loaded_;    
     QVector<Summary> pkts_;
     QCache<int, QByteArray> cache_;

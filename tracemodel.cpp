@@ -1,13 +1,14 @@
 #include "tracemodel.h"
+#include "traceview.h"
 
-TraceModel::TraceModel(QObject *parent) : QAbstractTableModel(parent)
+TraceModel::TraceModel(QObject *parent, TraceView *tv) : QAbstractTableModel(parent), tv_(tv)
 {
 }
 
 int TraceModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return trace_->getPacketCount();
+    return tv_->getTrace()->getPacketCount();
 }
 
 int TraceModel::columnCount(const QModelIndex &parent) const
@@ -24,17 +25,17 @@ QVariant TraceModel::data(const QModelIndex &index, int role) const
     int i = index.row();
     switch (index.column()) {
     case 0:
-        return trace_->getSummary(i).no;
+        return tv_->getTrace()->getSummary(i).no;
     case 1:
-        return trace_->getSummary(i).time;
+        return tv_->getTrace()->getSummary(i).time;
     case 2:
-        return trace_->getSummary(i).src;
+        return tv_->getTrace()->getSummary(i).src;
     case 3:
-        return trace_->getSummary(i).dst;
+        return tv_->getTrace()->getSummary(i).dst;
     case 4:
-        return trace_->getSummary(i).proto;
+        return tv_->getTrace()->getSummary(i).proto;
     case 5:
-        return trace_->getSummary(i).info;;
+        return tv_->getTrace()->getSummary(i).info;;
     }
     return QVariant();
 }

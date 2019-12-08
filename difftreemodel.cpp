@@ -1,3 +1,4 @@
+#include "mainwindow.h"
 #include "difftreemodel.h"
 #include <QDebug>
 
@@ -22,13 +23,19 @@ DiffTreeModel::~DiffTreeModel()
 
 }
 
-void DiffTreeModel::setDiff(QVector<DiffNode>* diff)
+void DiffTreeModel::updateDiff()
 {
-    diff_ = diff;
+    QVector<DiffNode>* diff = MainWindow::instance->getDiff();
     QVector<DiffItem*> parents;
 
     root = new DiffItem();
     root->parent = nullptr;
+
+    if (!diff || diff->isEmpty()) {
+        return;
+    }
+
+
     root->node = &(*diff)[0];
 
     // depth 0 => root => no parents

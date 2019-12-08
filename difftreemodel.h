@@ -38,8 +38,7 @@ class DiffTreeModel : public QAbstractItemModel
 public:
     explicit DiffTreeModel(QObject *parent = nullptr);
     ~DiffTreeModel();
-
-    void setDiff(QVector<DiffNode>* diff);
+    void updateDiff();
     QVariant data(const QModelIndex &index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     QVariant headerData(int section, Qt::Orientation orientation,
@@ -53,10 +52,7 @@ public:
 private:
     void setupModelData(const QStringList &lines, DiffNode *parent);
 
-
-
     DiffItem *root;
-    QVector<DiffNode>* diff_;
 };
 
 #endif // FLATDIFFMODEL_H
