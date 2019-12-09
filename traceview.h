@@ -17,11 +17,16 @@ public:
     explicit TraceView(QWidget *parent = 0);
     ~TraceView();
     Trace::Node* getPacket(int no = -1);
+    int getPacketNo();
+    Trace::Node* getLastNode() { return lastNode; }
     Trace* getTrace() { return trace_; }
+
     void moveSelection(int dir);
+
 
 signals:
     void packetChanged(TraceView *tv);
+    void packetLoaded(Trace::Node* n);
 
 private:
     int getRow();
@@ -30,8 +35,12 @@ private:
     Trace* trace_;
     Trace::Node* lastNode;
 
-    QFutureWatcher<Trace*>* watcher;
-    QFuture<Trace*> future;
+    QFutureWatcher<Trace*>* watcherTrace;
+    QFuture<Trace*> futureTrace;
+
+    QFutureWatcher<Trace::Node*>* watcherNode;
+    QFuture<Trace::Node*> futureNode;
+
 
 private slots:
     void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);

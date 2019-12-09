@@ -5,7 +5,7 @@
 #include "keyeventfilter.h"
 #include <QFileDialog>
 #include <QFuture>
-
+#include <QStatusBar>
 
 TraceView::TraceView(QWidget *parent) :
     QFrame(parent),
@@ -23,18 +23,33 @@ TraceView::~TraceView()
     delete ui;
 }
 
+
 void TraceView::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
-    Trace::Node *sel = getPacket();
+    int no = getPacketNo();
+    MainWindow::instance->statusBar()->showMessage(QString("Loading packet %1...").arg(no));
 
-    if (!sel)
-        return;
+    watcherNode = new QFutureWatcher<Trace::Node*>;
+    connect(watcherNode, &QFutureWatcher<Trace::Node*>::finished, [this](){
+        Trace::Node *sel = futureNode.result();
+        if (!sel)
+            return;
 
-    if (sel == lastNode)
-        return;
+        if (sel == lastNode)
+            return;
 
-    lastNode = sel;
-    emit packetChanged(this);
+        lastNode = sel;
+        MainWindow::instance->statusBar()->clearMessage();
+        emit packetChanged(this);
+        delete watcherNode;
+    });
+    futureNode = QtConcurrent::run([this, no]() {
+        QThread::sleep(2);
+        auto r = trace_->getPacket(no);
+        QThread::sleep(2);
+        return r;
+    });
+    watcherNode->setFuture(futureNode);
 }
 
 void TraceView::moveSelection(int dir)
@@ -69,30 +84,27 @@ int TraceView::getRow()
     return sel[0].topLeft().row();
 }
 
-Trace::Node* TraceView::getPacket(int no) {
+int TraceView::getPacketNo()
+{
+    int no;
+    int row = getRow();
+    if (row < 0)
+        row = 0;
+    auto tvm = ui->tvTrace->model();
+    no = tvm->index(row, 0).data().toInt();
+    return no;
+}
+
+Trace::Node* TraceView::getPacket(int no)
+{
     if (!trace_ || !trace_->isLoaded())
         return nullptr;
 
     if (no < 0) {
-        int row = getRow();
-        if (row < 0)
-            row = 0;
-        auto tvm = ui->tvTrace->model();
-        no = tvm->index(row, 0).data().toInt();
+        no = getPacketNo();
     }
 
-#if 1
     return trace_->getPacket(no);
-#else
-    watcher = new QFutureWatcher<Trace::Node*>;
-    connect(watcher, &QFutureWatcher<Trace::Node*>::finished, [no, this](){
-
-    });
-    future = QtConcurrent::run([=]() {
-        return trace_->getPacket(no);
-    });
-    watcher->setFuture(future);
-#endif
 }
 
 void TraceView::onOpen(bool checked)
@@ -104,11 +116,11 @@ void TraceView::onOpen(bool checked)
         return;
 
     ui->lbName->setText("Loading...");
+    ui->btOpen->setEnabled(false);
+    watcherTrace = new QFutureWatcher<Trace*>;
 
-    watcher = new QFutureWatcher<Trace*>;
-
-    connect(watcher, &QFutureWatcher<Trace*>::finished, [fn, this](){
-        this->trace_ = this->future.result();
+    connect(watcherTrace, &QFutureWatcher<Trace*>::finished, [fn, this](){
+        this->trace_ = this->futureTrace.result();
         this->ui->tvTrace->setModel(new TraceModel(this, this));
         connect(this->ui->tvTrace->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TraceView::onSelectionChanged);
         this->ui->tvTrace->horizontalHeader()->setVisible(true);
@@ -122,13 +134,14 @@ void TraceView::onOpen(bool checked)
         //ui->tvTrace->setColumnWidth(5, qMax(colsize, ui->tvTrace->width()-5*colsize)); // info
         this->ui->tvTrace->show();
         this->ui->lbName->setText(fn);
+        ui->btOpen->setEnabled(true);
         emit packetChanged(this);
-        delete this->watcher;
+        delete this->watcherTrace;
     });
-    future = QtConcurrent::run([=]() {
+    futureTrace = QtConcurrent::run([=]() {
         Trace* trace = new Trace();
         trace->loadTrace(fn);
         return trace;
     });
-    watcher->setFuture(future);
+    watcherTrace->setFuture(futureTrace);
 }

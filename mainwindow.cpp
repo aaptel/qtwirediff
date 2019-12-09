@@ -40,13 +40,13 @@ MainWindow::~MainWindow()
 void MainWindow::onPacketChange(TraceView* tv)
 {
     Trace::Node *left, *right;
-    left = traceLeft->getPacket();
-    right = traceRight->getPacket();
+    left = traceLeft->getLastNode();
+    right = traceRight->getLastNode();
 
     if (!left || !right)
         return;
 
     diff.clear();
-    computeDiff(diff, traceLeft->getPacket(), traceRight->getPacket());
+    computeDiff(diff, left, right);
     diffview->updateDiff();
 }
