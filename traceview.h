@@ -30,6 +30,9 @@ private:
     Trace* trace_;
     Trace::Node* lastNode;
 
+    QFutureWatcher<Trace*>* watcher;
+    QFuture<Trace*> future;
+
 private slots:
     void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void onOpen(bool checked);

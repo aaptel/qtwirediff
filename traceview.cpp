@@ -4,6 +4,8 @@
 #include "mainwindow.h"
 #include "keyeventfilter.h"
 #include <QFileDialog>
+#include <QFuture>
+
 
 TraceView::TraceView(QWidget *parent) :
     QFrame(parent),
@@ -66,6 +68,7 @@ int TraceView::getRow()
         return -1;
     return sel[0].topLeft().row();
 }
+
 Trace::Node* TraceView::getPacket(int no) {
     if (!trace_ || !trace_->isLoaded())
         return nullptr;
@@ -78,9 +81,19 @@ Trace::Node* TraceView::getPacket(int no) {
         no = tvm->index(row, 0).data().toInt();
     }
 
+#if 1
     return trace_->getPacket(no);
-}
+#else
+    watcher = new QFutureWatcher<Trace::Node*>;
+    connect(watcher, &QFutureWatcher<Trace::Node*>::finished, [no, this](){
 
+    });
+    future = QtConcurrent::run([=]() {
+        return trace_->getPacket(no);
+    });
+    watcher->setFuture(future);
+#endif
+}
 
 void TraceView::onOpen(bool checked)
 {
@@ -90,20 +103,32 @@ void TraceView::onOpen(bool checked)
     if (fn.isEmpty())
         return;
 
-    ui->lbName->setText(fn);
-    trace_ = new Trace();
-    trace_->loadTrace(fn);
-    ui->tvTrace->setModel(new TraceModel(this, this));
-    connect(ui->tvTrace->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TraceView::onSelectionChanged);
-    ui->tvTrace->horizontalHeader()->setVisible(true);
-    int colsize = 50;
-    ui->tvTrace->setColumnWidth(0, colsize); // no
-    ui->tvTrace->setColumnWidth(1, colsize); // time
-    ui->tvTrace->setColumnWidth(2, colsize); // src
-    ui->tvTrace->setColumnWidth(3, colsize); // dst
-    ui->tvTrace->setColumnWidth(4, colsize); // proto
-    ui->tvTrace->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch);
-    //ui->tvTrace->setColumnWidth(5, qMax(colsize, ui->tvTrace->width()-5*colsize)); // info
-    ui->tvTrace->show();
-    emit packetChanged(this);
+    ui->lbName->setText("Loading...");
+
+    watcher = new QFutureWatcher<Trace*>;
+
+    connect(watcher, &QFutureWatcher<Trace*>::finished, [fn, this](){
+        this->trace_ = this->future.result();
+        this->ui->tvTrace->setModel(new TraceModel(this, this));
+        connect(this->ui->tvTrace->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TraceView::onSelectionChanged);
+        this->ui->tvTrace->horizontalHeader()->setVisible(true);
+        int colsize = 50;
+        this->ui->tvTrace->setColumnWidth(0, colsize); // no
+        this->ui->tvTrace->setColumnWidth(1, colsize); // time
+        this->ui->tvTrace->setColumnWidth(2, colsize); // src
+        this->ui->tvTrace->setColumnWidth(3, colsize); // dst
+        this->ui->tvTrace->setColumnWidth(4, colsize); // proto
+        this->ui->tvTrace->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Stretch);
+        //ui->tvTrace->setColumnWidth(5, qMax(colsize, ui->tvTrace->width()-5*colsize)); // info
+        this->ui->tvTrace->show();
+        this->ui->lbName->setText(fn);
+        emit packetChanged(this);
+        delete this->watcher;
+    });
+    future = QtConcurrent::run([=]() {
+        Trace* trace = new Trace();
+        trace->loadTrace(fn);
+        return trace;
+    });
+    watcher->setFuture(future);
 }
