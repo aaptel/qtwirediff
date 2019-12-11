@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 #ifndef DIFFVIEW_H
 #define DIFFVIEW_H
 

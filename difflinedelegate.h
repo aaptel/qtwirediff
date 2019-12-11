@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 #ifndef DIFFLINEDELEGATE_H
 #define DIFFLINEDELEGATE_H
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 #ifndef TRACEMODEL_H
 #define TRACEMODEL_H
 

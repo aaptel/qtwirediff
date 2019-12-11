@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 #include "difflinedelegate.h"
 #include "difftreemodel.h"
 #include <QPainter>

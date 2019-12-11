@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 #include "keyeventfilter.h"
 #include "mainwindow.h"
 #include <QKeyEvent>

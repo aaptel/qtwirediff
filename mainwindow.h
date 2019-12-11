@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 

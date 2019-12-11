@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 #ifndef FLATDIFFMODEL_H
 #define FLATDIFFMODEL_H
 

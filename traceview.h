@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 #ifndef TRACEVIEW_H
 #define TRACEVIEW_H
 

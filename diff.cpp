@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 #include "diff.h"
 #include "dtl/dtl.hpp"
 #include <vector>

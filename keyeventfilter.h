@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 #ifndef KEYEVENTFILTER_H
 #define KEYEVENTFILTER_H
 

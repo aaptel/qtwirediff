@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 #include "trace.h"
 #include <QProcess>
 #include <QXmlStreamReader>

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 #include "traceview.h"
 #include "tracemodel.h"
 #include "ui_traceview.h"

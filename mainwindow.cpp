@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "trace.h"

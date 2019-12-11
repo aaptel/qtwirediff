@@ -1,0 +1,20 @@
+qtwirediff
+==========
+
+WireDiff is a debugging tool to diff network traffic leveraging
+Wireshark.
+
+Wirediff lets you open 2 network traces packets side-by-side. You can
+select a packet from each trace and diff their content at the protocol
+level you want.
+
+This is a rewrite of an older tool smbcmp [1] made more generic
+(smbcmp only dealt with SMB traffic).
+
+WireDiff is licensed under the GPLv3 and originally written by
+Aurélien Aptel <aurelien.aptel@gmail.com>. See LICENSE for more
+details.
+
+1: https://smbcmp.github.io
+
+
