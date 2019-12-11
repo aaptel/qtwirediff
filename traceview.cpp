@@ -44,9 +44,7 @@ void TraceView::onSelectionChanged(const QItemSelection &selected, const QItemSe
         delete watcherNode;
     });
     futureNode = QtConcurrent::run([this, no]() {
-        QThread::sleep(2);
         auto r = trace_->getPacket(no);
-        QThread::sleep(2);
         return r;
     });
     watcherNode->setFuture(futureNode);
