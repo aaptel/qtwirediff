@@ -27,7 +27,6 @@ public:
 
 signals:
     void packetChanged(TraceView *tv);
-    void packetLoaded(Trace::Node* n);
 
 private:
     int getRow();
