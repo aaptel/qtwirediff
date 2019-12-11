@@ -64,7 +64,7 @@ public:
 private:
     QString fn_;
     QString filter_;
-    bool loaded_;    
+    bool loaded_;
     QVector<Summary> pkts_;
     QCache<int, QByteArray> cache_;
 

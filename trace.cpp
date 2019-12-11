@@ -143,7 +143,6 @@ QByteArray* Trace::getPDML(int no)
     return cache_[no];
 }
 
-
 void Trace::Node::dump(int n)
 {
     {
@@ -156,8 +155,6 @@ void Trace::Node::dump(int n)
         children[i]->dump(n+1);
     }
 }
-
-
 
 bool Trace::Node::operator==(const Node& rhs) const
 {

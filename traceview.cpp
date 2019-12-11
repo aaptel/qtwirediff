@@ -24,7 +24,6 @@ TraceView::~TraceView()
     delete ui;
 }
 
-
 void TraceView::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     int no = getPacketNo();
