@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
-#include "mainwindow.h"
 #include <QApplication>
-#include "trace.h"
-#include "diff.h"
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
