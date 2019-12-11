@@ -93,18 +93,6 @@ int TraceView::getPacketNo()
     return no;
 }
 
-Trace::Node* TraceView::getPacket(int no)
-{
-    if (!trace_ || !trace_->isLoaded())
-        return nullptr;
-
-    if (no < 0) {
-        no = getPacketNo();
-    }
-
-    return trace_->getPacket(no);
-}
-
 void TraceView::onOpen(bool checked)
 {
     QString fn = QFileDialog::getOpenFileName(this,
