@@ -2,14 +2,12 @@
 #ifndef TRACE_H
 #define TRACE_H
 
-#include <QObject>
 #include <QVector>
 #include <QCache>
 #include <QtConcurrent>
 
-class Trace : public QObject
+class Trace
 {
-    Q_OBJECT
 public:
     struct Summary {
         int no;
@@ -29,17 +27,10 @@ public:
         bool isLeaf() const {return children.isEmpty();}
         uint cached_hash;
         uint hash();
-        void dump(int n=0);
-        int depth() const {
-            const Node* p = parent;
-            int n = 0;
-            while (p) {
-                n++;
-                p = p->parent;
-            }
-            return n;
-        }
+        void dump(int n=0) const;
+        int depth() const;
         bool operator==(const Node& rhs) const;
+        static void releaseNodeHierarchy(Node *);
     };
 
     class ParseError : public QtConcurrent::Exception
@@ -49,7 +40,7 @@ public:
         ParseError *clone() const { return new ParseError(*this); }
     };
 
-    explicit Trace(QObject *parent = nullptr);
+    explicit Trace() {};
     int loadTrace(const QString& fn);
     Node* getPacket(int no);
     void dump();
@@ -59,16 +50,35 @@ public:
     QString getFilename() const { return fn_; }
     bool isLoaded() const { return loaded_; }
     QString getFilter() const { return filter_; }
-    void setFilter(const QString& s) { filter_ = s;}
 
 private:
+    // disable copy
+    Trace(const Trace&);
+    Trace& operator=(const Trace&);
+    QByteArray* getPDML(int no);
+
+
     QString fn_;
     QString filter_;
     bool loaded_;
     QVector<Summary> pkts_;
-    QCache<int, QByteArray> cache_;
 
-    QByteArray* getPDML(int no);
+    // cache owns the node root and its hierarchy and will free
+    // the hierarchy when
+    // - node goes out of cache (max cache size reached)
+    // - Trace is destroyed
+    //
+    // the application should not hold more than 2 root references
+    // (one for each trace) so cache max size just needs to be 2+
+    struct Tree {
+        Trace::Node *root;
+        Tree(Trace::Node *p) : root(p) {}
+        ~Tree() { Trace::Node::releaseNodeHierarchy(root); }
+    private: // disable copy
+        Tree(const Tree&);
+        Tree& operator=(const Tree&);
+    };
+    QCache<int, Trace::Tree> cache_;
 
 signals:
 

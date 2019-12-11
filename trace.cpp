@@ -4,12 +4,7 @@
 #include <QXmlStreamReader>
 #include <QBuffer>
 #include <QDebug>
-
-
-Trace::Trace(QObject *parent) : QObject(parent)
-{
-
-}
+#include <functional>
 
 int Trace::loadTrace(const QString &fn)
 {
@@ -125,25 +120,51 @@ void Trace::dump()
 
 QByteArray* Trace::getPDML(int no)
 {
-    if (!cache_.contains(no)) {
-        QProcess proc;
-        QStringList args;
+    QProcess proc;
+    QStringList args;
 
-        args << "-r" << fn_;
-        args << "-Y" << (QString("frame.number == %1").arg(no));
-        args << "-T" << "pdml";
+    args << "-r" << fn_;
+    args << "-Y" << (QString("frame.number == %1").arg(no));
+    args << "-T" << "pdml";
 
-        proc.start("tshark", args, QProcess::ReadOnly);
-        proc.waitForStarted();
-        proc.waitForFinished();
+    proc.start("tshark", args, QProcess::ReadOnly);
+    proc.waitForStarted();
+    proc.waitForFinished();
 
-        QByteArray *out = new QByteArray(proc.readAllStandardOutput());
-        cache_.insert(no, out);
-    }
-    return cache_[no];
+    QByteArray *out = new QByteArray(proc.readAllStandardOutput());
+    return out;
 }
 
-void Trace::Node::dump(int n)
+void Trace::Node::releaseNodeHierarchy(Trace::Node *n)
+{
+    // get parent
+    while (n->parent) {
+        n = n->parent;
+    }
+
+    // recursively free on the way up
+    std::function<void(Trace::Node* n)> release = [release](Trace::Node* n) {
+            if (!n->isLeaf())
+                for (Trace::Node* c : n->children)
+                    release(c);
+            delete n;
+    };
+
+    release(n);
+}
+
+int Trace::Node::depth() const
+{
+    const Node* p = parent;
+    int n = 0;
+    while (p) {
+        n++;
+        p = p->parent;
+    }
+    return n;
+}
+
+void Trace::Node::dump(int n) const
 {
     {
         auto d = qDebug().nospace();
@@ -195,21 +216,24 @@ static Trace::Node* parseNode(QXmlStreamReader& xml)
 
 Trace::Node* Trace::getPacket(int no)
 {
-    QBuffer outbuf;
-    outbuf.setBuffer(getPDML(no));
-    outbuf.open(QIODevice::ReadOnly);
+    if (!cache_.contains(no)) {
+        QBuffer outbuf;
+        outbuf.setBuffer(getPDML(no));
+        outbuf.open(QIODevice::ReadOnly);
 
-    QXmlStreamReader xml;
-    xml.setDevice(&outbuf);
+        QXmlStreamReader xml;
+        xml.setDevice(&outbuf);
 
-    if (!xml.readNextStartElement())
-        throw ParseError();
-    if (xml.name() != "pdml")
-        throw ParseError();
-    if (!xml.readNextStartElement())
-        throw ParseError();
-    if (xml.name() != "packet")
-        throw ParseError();
+        if (!xml.readNextStartElement())
+            throw ParseError();
+        if (xml.name() != "pdml")
+            throw ParseError();
+        if (!xml.readNextStartElement())
+            throw ParseError();
+        if (xml.name() != "packet")
+            throw ParseError();
 
-    return parseNode(xml);
+        cache_.insert(no, new Trace::Tree(parseNode(xml)));
+    }
+    return cache_[no]->root;
 }
