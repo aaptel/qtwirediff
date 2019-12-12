@@ -8,11 +8,15 @@
 
 #include "diff.h"
 
-struct DiffItem {
+struct DiffItem : public QObject {
+    Q_OBJECT
+
+public:
     DiffItem *parent;
     DiffNode *node;
     QVector<DiffItem*> children;
 
+    DiffItem(QObject *o) : QObject(o) {}
     int row() const
     {
         if (parent)

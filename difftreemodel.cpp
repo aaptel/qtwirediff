@@ -29,13 +29,12 @@ void DiffTreeModel::updateDiff()
     QVector<DiffNode>* diff = MainWindow::instance->getDiff();
     QVector<DiffItem*> parents;
 
-    root = new DiffItem();
+    root = new DiffItem(this);
     root->parent = nullptr;
 
     if (!diff || diff->isEmpty()) {
         return;
     }
-
 
     root->node = &(*diff)[0];
 
@@ -55,9 +54,8 @@ void DiffTreeModel::updateDiff()
     for (int j = 1; j < parents.size(); j++)
         parents[j] = root;
 
-
     for (int i = 1; i < diff->size(); i++) {
-        DiffItem *it = new DiffItem();
+        DiffItem *it = new DiffItem(this);
         DiffNode *n = &(*diff)[i];
         it->node = n;
 
@@ -68,10 +66,7 @@ void DiffTreeModel::updateDiff()
         it->parent->children.append(it);
     }
     //dumpDiffItem(root);
-
 }
-
-
 
 int DiffTreeModel::columnCount(const QModelIndex &parent) const
 {
