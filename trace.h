@@ -41,7 +41,7 @@ public:
     };
 
     explicit Trace() {};
-    int loadTrace(const QString& fn);
+    int loadTrace(const QString& fn, const QString& filter = "");
     Node* getPacket(int no);
     void dump();
     size_t getPacketCount() {return pkts_.size();}

@@ -18,7 +18,8 @@ TraceView::TraceView(QWidget *parent) :
     KeyEventFilter::install(this);
     KeyEventFilter::install(ui->tvTrace);
     ui->tvTrace->setSelectionBehavior (QAbstractItemView::SelectRows);
-    connect(ui->btOpen, &QAbstractButton::clicked, this, &TraceView::onOpen);
+    connect(ui->btOpen, &QAbstractButton::clicked, this, &TraceView::onOpenClick);
+    connect(ui->txtFilter, &QLineEdit::returnPressed, this, &TraceView::onFilterSubmit);
 }
 
 TraceView::~TraceView()
@@ -95,7 +96,7 @@ int TraceView::getPacketNo()
     return no;
 }
 
-void TraceView::onOpen(bool checked)
+void TraceView::onOpenClick(bool checked)
 {
     QString fn = QFileDialog::getOpenFileName(this,
                                               tr("Open trace file"), "",
@@ -103,6 +104,11 @@ void TraceView::onOpen(bool checked)
     if (fn.isEmpty())
         return;
 
+    asyncOpen(fn);
+}
+
+void TraceView::asyncOpen(QString fn, QString filter)
+{
     ui->lbName->setText("Loading...");
     ui->btOpen->setEnabled(false);
     watcherTrace = new QFutureWatcher<Trace*>;
@@ -128,12 +134,22 @@ void TraceView::onOpen(bool checked)
         emit packetChanged(this);
         delete this->watcherTrace;
         delete oldTrace;
-
     });
     futureTrace = QtConcurrent::run([=]() {
         Trace* trace = new Trace();
-        trace->loadTrace(fn);
+        trace->loadTrace(fn, filter);
         return trace;
     });
     watcherTrace->setFuture(futureTrace);
+}
+
+void TraceView::onFilterSubmit()
+{
+    QString f = ui->txtFilter->text();
+    if (!trace_)
+        return;
+    if (f == trace_->getFilter())
+        return;
+
+    asyncOpen(trace_->getFilename(), f);
 }

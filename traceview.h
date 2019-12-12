@@ -29,6 +29,7 @@ signals:
 
 private:
     int getRow();
+    void asyncOpen(QString fn, QString filter = "");
 
     Ui::TraceView *ui;
     Trace* trace_;
@@ -40,10 +41,10 @@ private:
     QFutureWatcher<Trace::Node*>* watcherNode;
     QFuture<Trace::Node*> futureNode;
 
-
 private slots:
     void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-    void onOpen(bool checked);
+    void onOpenClick(bool checked);
+    void onFilterSubmit();
 };
 
 #endif // TRACEVIEW_H

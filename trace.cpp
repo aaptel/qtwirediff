@@ -6,15 +6,17 @@
 #include <QDebug>
 #include <functional>
 
-int Trace::loadTrace(const QString &fn)
+int Trace::loadTrace(const QString &fn, const QString &filter)
 {
     fn_ = fn;
+    filter_ = filter;
 
     QProcess proc;
     QStringList args;
 
     args << "-r" << fn_;
-    args << "-Y" << "!browser && (smb||smb2)";
+    if (!filter_.isEmpty())
+        args << "-Y" << filter;
     args << "-T" << "psml";
 
     proc.start("tshark", args, QProcess::ReadOnly);
