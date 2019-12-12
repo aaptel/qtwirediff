@@ -143,7 +143,7 @@ void Trace::Node::releaseNodeHierarchy(Trace::Node *n)
     }
 
     // recursively free on the way up
-    std::function<void(Trace::Node* n)> release = [release](Trace::Node* n) {
+    std::function<void(Trace::Node* n)> release = [&release](Trace::Node* n) {
             if (!n->isLeaf())
                 for (Trace::Node* c : n->children)
                     release(c);
