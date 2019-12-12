@@ -12,6 +12,8 @@ TraceView::TraceView(QWidget *parent) :
     QFrame(parent),
     ui(new Ui::TraceView)
 {
+    trace_ = nullptr;
+    lastNode = nullptr;
     ui->setupUi(this);
     KeyEventFilter::install(this);
     KeyEventFilter::install(ui->tvTrace);
@@ -106,7 +108,9 @@ void TraceView::onOpen(bool checked)
     watcherTrace = new QFutureWatcher<Trace*>;
 
     connect(watcherTrace, &QFutureWatcher<Trace*>::finished, [fn, this](){
+        Trace* oldTrace = this->trace_;
         this->trace_ = this->futureTrace.result();
+        this->lastNode = nullptr;
         this->ui->tvTrace->setModel(new TraceModel(this, this));
         connect(this->ui->tvTrace->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TraceView::onSelectionChanged);
         this->ui->tvTrace->horizontalHeader()->setVisible(true);
@@ -123,6 +127,8 @@ void TraceView::onOpen(bool checked)
         ui->btOpen->setEnabled(true);
         emit packetChanged(this);
         delete this->watcherTrace;
+        delete oldTrace;
+
     });
     futureTrace = QtConcurrent::run([=]() {
         Trace* trace = new Trace();
