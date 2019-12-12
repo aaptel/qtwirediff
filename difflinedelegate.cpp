@@ -2,6 +2,7 @@
 #include "difflinedelegate.h"
 #include "difftreemodel.h"
 #include <QPainter>
+#include "mainwindow.h"
 
 DiffLineDelegate::DiffLineDelegate(QWidget *parent) : QStyledItemDelegate(parent)
 {
@@ -12,7 +13,9 @@ void DiffLineDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
                          const QModelIndex &index) const
 {
     DiffItem *it = static_cast<DiffItem*>(index.internalPointer());
-    bool expanded = static_cast<const DiffTreeModel*>(index.model())->tv->isExpanded(index);
+    auto dv = MainWindow::instance->getDiffView();
+    Q_ASSERT(dv);
+    bool expanded = dv->isExpanded(index);
     QBrush b;
     bool fill = true;
 

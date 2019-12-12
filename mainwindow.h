@@ -24,6 +24,8 @@ public:
     QVector<DiffNode>* getDiff() { return &diff; }
     void moveSelection(int dir);
     ~MainWindow();
+    DiffView* getDiffView() { return diffview; }
+
 
 public slots:
     void onPacketChange(TraceView* tv);

@@ -49,7 +49,6 @@ public:
     QModelIndex parent(const QModelIndex &index) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-    QTreeView *tv;
 private:
     void setupModelData(const QStringList &lines, DiffNode *parent);
 
