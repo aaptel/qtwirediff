@@ -16,7 +16,7 @@ static void dumpDiffItem(DiffItem *n, int dep=0)
 DiffTreeModel::DiffTreeModel(QObject *parent)
     : QAbstractItemModel(parent)
 {
-
+    root = nullptr;
 }
 
 DiffTreeModel::~DiffTreeModel()
@@ -29,13 +29,15 @@ void DiffTreeModel::updateDiff()
     QVector<DiffNode>* diff = MainWindow::instance->getDiff();
     QVector<DiffItem*> parents;
 
-    root = new DiffItem(this);
-    root->parent = nullptr;
-
+    beginResetModel();
+    delete root;
     if (!diff || diff->isEmpty()) {
-        return;
+        root = nullptr;
+        goto out;
     }
 
+    root = new DiffItem(this);
+    root->parent = nullptr;
     root->node = &(*diff)[0];
 
     // depth 0 => root => no parents
@@ -55,7 +57,7 @@ void DiffTreeModel::updateDiff()
         parents[j] = root;
 
     for (int i = 1; i < diff->size(); i++) {
-        DiffItem *it = new DiffItem(this);
+        DiffItem *it = new DiffItem(root);
         DiffNode *n = &(*diff)[i];
         it->node = n;
 
@@ -65,7 +67,9 @@ void DiffTreeModel::updateDiff()
         it->parent = parents[depth];
         it->parent->children.append(it);
     }
+out:
     //dumpDiffItem(root);
+    endResetModel();
 }
 
 int DiffTreeModel::columnCount(const QModelIndex &parent) const
@@ -75,6 +79,9 @@ int DiffTreeModel::columnCount(const QModelIndex &parent) const
 
 QVariant DiffTreeModel::data(const QModelIndex &index, int role) const
 {
+    if (!root)
+        return QVariant();
+
     if (!index.isValid())
         return QVariant();
 
@@ -109,6 +116,8 @@ QVariant DiffTreeModel::headerData(int section, Qt::Orientation orientation,
 
 QModelIndex DiffTreeModel::index(int row, int column, const QModelIndex &parent) const
 {
+    if (!root)
+        return QModelIndex();
 
     if (!hasIndex(row, column, parent))
         return QModelIndex();
@@ -128,6 +137,9 @@ QModelIndex DiffTreeModel::index(int row, int column, const QModelIndex &parent)
 
 QModelIndex DiffTreeModel::parent(const QModelIndex &index) const
 {
+    if (!root)
+        return QModelIndex();
+
     if (!index.isValid())
         return QModelIndex();
 
@@ -142,6 +154,9 @@ QModelIndex DiffTreeModel::parent(const QModelIndex &index) const
 
 int DiffTreeModel::rowCount(const QModelIndex &parent) const
 {
+    if (!root)
+        return 0;
+
     DiffItem *parentItem;
     if (parent.column() > 0)
         return 0;

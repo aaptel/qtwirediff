@@ -8,21 +8,11 @@
 DiffView::DiffView(QWidget *parent) : QTreeView(parent)
 {
     KeyEventFilter::install(this);
+    setModel(new DiffTreeModel(this));
+    setItemDelegate(new DiffLineDelegate(this));
 }
 
 void DiffView::updateDiff()
 {
-    auto oldModel = model();
-    auto oldDeleg = itemDelegate();
-
-    auto* newModel = new DiffTreeModel(this);
-    newModel->updateDiff();
-    setItemDelegate(new DiffLineDelegate(this));
-    setModel(newModel);
-
-    // release previous ressources (including all DiffItems)
-    if (oldModel)
-        oldModel->deleteLater();
-    if (oldDeleg)
-        oldDeleg->deleteLater();
+    static_cast<DiffTreeModel*>(model())->updateDiff();
 }

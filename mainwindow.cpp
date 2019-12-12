@@ -44,10 +44,8 @@ void MainWindow::onPacketChange(TraceView* tv)
     left = traceLeft->getLastNode();
     right = traceRight->getLastNode();
 
-    if (!left || !right)
-        return;
-
     diff.clear();
-    computeDiff(diff, left, right);
+    if (left && right)
+        computeDiff(diff, left, right);
     diffview->updateDiff();
 }
