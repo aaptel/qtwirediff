@@ -12,9 +12,17 @@ DiffView::DiffView(QWidget *parent) : QTreeView(parent)
 
 void DiffView::updateDiff()
 {
-    auto* m = new DiffTreeModel(this);
-    m->updateDiff();
+    auto oldModel = model();
+    auto oldDeleg = itemDelegate();
+
+    auto* newModel = new DiffTreeModel(this);
+    newModel->updateDiff();
     setItemDelegate(new DiffLineDelegate(this));
-    m->tv = this;
-    setModel(m);
+    setModel(newModel);
+
+    // release previous ressources (including all DiffItems)
+    if (oldModel)
+        oldModel->deleteLater();
+    if (oldDeleg)
+        oldDeleg->deleteLater();
 }
