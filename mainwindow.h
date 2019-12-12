@@ -30,6 +30,9 @@ public:
 public slots:
     void onPacketChange(TraceView* tv);
 
+private slots:
+    void on_actionAbout_triggered();
+
 private:
     Ui::MainWindow *ui;
     TraceView *traceLeft;

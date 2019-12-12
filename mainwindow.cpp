@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
+#include <QMessageBox>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "trace.h"
@@ -25,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(traceLeft, &TraceView::packetChanged, this, &MainWindow::onPacketChange);
     connect(traceRight, &TraceView::packetChanged, this, &MainWindow::onPacketChange);
+
 }
 
 void MainWindow::moveSelection(int dir)
@@ -48,4 +50,9 @@ void MainWindow::onPacketChange(TraceView* tv)
     if (left && right)
         computeDiff(diff, left, right);
     diffview->updateDiff();
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    QMessageBox::about(this, "About WireDiff", "WireDiff is free software licensed under the GPLv3.");
 }
