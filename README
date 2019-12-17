@@ -18,3 +18,14 @@ details.
 1: https://smbcmp.github.io
 
 
+Building
+========
+
+This project uses is based on qmake:
+
+$ qmake-qt5 && make
+
+Alternatively you can open the .pro file in QtCreator and build from
+there.
+
+
