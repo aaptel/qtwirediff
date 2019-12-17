@@ -78,6 +78,7 @@ void MainWindow::updateSession()
 
 void MainWindow::onPacketChange(TraceView* tv)
 {
+    Q_UNUSED(tv);
     Trace::Node *left, *right;
     left = traceLeft->getLastNode();
     right = traceRight->getLastNode();

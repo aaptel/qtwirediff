@@ -29,6 +29,8 @@ TraceView::~TraceView()
 
 void TraceView::onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
+    Q_UNUSED(selected);
+    Q_UNUSED(deselected);
     int no = getPacketNo();
     MainWindow::instance->statusBar()->showMessage(QString("Loading packet %1...").arg(no));
 
@@ -98,6 +100,7 @@ int TraceView::getPacketNo()
 
 void TraceView::onOpenClick(bool checked)
 {
+    Q_UNUSED(checked);
     QString fn = QFileDialog::getOpenFileName(this,
                                               tr("Open trace file"), "",
                                                "All Files (*)");
