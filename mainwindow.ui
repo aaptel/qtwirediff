@@ -50,12 +50,19 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>Edit</string>
+     <string>File</string>
     </property>
+    <widget class="QMenu" name="menuPrevious_sessions">
+     <property name="title">
+      <string>Previous sessions</string>
+     </property>
+     <addaction name="actionNone"/>
+    </widget>
+    <addaction name="menuPrevious_sessions"/>
    </widget>
-   <addaction name="menuEdit"/>
+   <addaction name="menuFile"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -69,7 +76,12 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAbout">
    <property name="text">
-    <string>About</string>
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionNone">
+   <property name="text">
+    <string>None</string>
    </property>
   </action>
  </widget>

@@ -22,14 +22,14 @@ public:
     Trace* getTrace() { return trace_; }
 
     void moveSelection(int dir);
-
+    void asyncOpen(QString fn, QString filter = "");
 
 signals:
     void packetChanged(TraceView *tv);
 
 private:
     int getRow();
-    void asyncOpen(QString fn, QString filter = "");
+
 
     Ui::TraceView *ui;
     Trace* trace_;

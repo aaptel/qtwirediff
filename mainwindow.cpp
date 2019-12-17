@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 #include "trace.h"
 #include "keyeventfilter.h"
+#include "sessionitem.h"
 
 MainWindow * MainWindow::instance = nullptr;
 
@@ -27,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(traceLeft, &TraceView::packetChanged, this, &MainWindow::onPacketChange);
     connect(traceRight, &TraceView::packetChanged, this, &MainWindow::onPacketChange);
 
+    reloadSessionMenu();
 }
 
 void MainWindow::moveSelection(int dir)
@@ -37,7 +39,37 @@ void MainWindow::moveSelection(int dir)
 
 MainWindow::~MainWindow()
 {
+    sesList.save();
     delete ui;
+}
+
+void MainWindow::onSessionItemClick(bool checked)
+{
+    Q_UNUSED(checked);
+    SessionItem* it = static_cast<SessionItem*>(QObject::sender());
+    traceLeft->asyncOpen(it->ses_.fileA, it->ses_.filterA);
+    traceRight->asyncOpen(it->ses_.fileB, it->ses_.filterB);
+    diffview->setFilter(it->ses_.diffFilter);
+}
+
+void MainWindow::reloadSessionMenu()
+{
+    ui->menuPrevious_sessions->clear();
+    for (Session& s : sesList.ses_) {
+        auto it = new SessionItem(ui->menuPrevious_sessions, &s);
+        ui->menuPrevious_sessions->addAction(it);
+        connect(it, &SessionItem::triggered, this, &MainWindow::onSessionItemClick);
+    }
+}
+
+void MainWindow::updateSession()
+{
+    if (traceLeft->getTrace() && traceRight->getTrace()) {
+        sesList.add(traceLeft->getTrace()->getFilename(), traceLeft->getTrace()->getFilter(),
+                traceRight->getTrace()->getFilename(), traceRight->getTrace()->getFilter(),
+                diffview->getFilter());
+        reloadSessionMenu();
+    }
 }
 
 void MainWindow::onPacketChange(TraceView* tv)
@@ -50,6 +82,7 @@ void MainWindow::onPacketChange(TraceView* tv)
     if (left && right)
         computeDiff(diff, left, right);
     diffview->updateDiff();
+    updateSession();
 }
 
 void MainWindow::on_actionAbout_triggered()

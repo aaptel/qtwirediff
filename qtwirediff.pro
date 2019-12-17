@@ -34,6 +34,8 @@ SOURCES += \
     traceview.cpp \
     diffview.cpp \
     keyeventfilter.cpp
+    session.cpp \
+    sessionitem.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -46,6 +48,8 @@ HEADERS += \
     traceview.h \
     diffview.h \
     keyeventfilter.h
+    session.h \
+    sessionitem.h
 
 FORMS += \
         mainwindow.ui \

@@ -6,6 +6,7 @@
 #include "traceview.h"
 #include "diff.h"
 #include "diffview.h"
+#include "session.h"
 
 class Trace;
 class QTableView;
@@ -26,12 +27,15 @@ public:
     ~MainWindow();
     DiffView* getDiffView() { return diffview; }
 
+    void updateSession();
+    void reloadSessionMenu();
 
 public slots:
     void onPacketChange(TraceView* tv);
 
 private slots:
     void on_actionAbout_triggered();
+    void onSessionItemClick(bool checked);
 
 private:
     Ui::MainWindow *ui;
@@ -39,6 +43,7 @@ private:
     TraceView *traceRight;
     DiffView *diffview;
     QVector<DiffNode> diff;
+    SessionList sesList;
 };
 
 #endif // MAINWINDOW_H
