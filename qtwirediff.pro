@@ -32,8 +32,10 @@ SOURCES += \
     difflinedelegate.cpp \
     difftreemodel.cpp \
     traceview.cpp \
+    difftreeview.cpp \
+    keyeventfilter.cpp \
     diffview.cpp \
-    keyeventfilter.cpp
+    difffilterlist.cpp \
     session.cpp \
     sessionitem.cpp
 
@@ -46,8 +48,10 @@ HEADERS += \
     difflinedelegate.h \
     difftreemodel.h \
     traceview.h \
+    difftreeview.h \
+    keyeventfilter.h \
     diffview.h \
-    keyeventfilter.h
+    difffilterlist.h \
     session.h \
     sessionitem.h
 

@@ -1,18 +1,34 @@
-// SPDX-License-Identifier: GPL-3.0
-#include "mainwindow.h"
 #include "diffview.h"
-#include "difftreemodel.h"
-#include "difflinedelegate.h"
-#include "keyeventfilter.h"
+#include <QVBoxLayout>
+#include <QLineEdit>
 
-DiffView::DiffView(QWidget *parent) : QTreeView(parent)
+DiffView::DiffView(QWidget* w) : QFrame(w)
 {
-    KeyEventFilter::install(this);
-    setModel(new DiffTreeModel(this));
-    setItemDelegate(new DiffLineDelegate(this));
+    this->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
+    this->setLineWidth(1);
+
+    dtv_ = new DiffTreeView(this);
+    txtFilter_ = new QLineEdit(this);
+    txtFilter_->setPlaceholderText("comma-separated list of id to filter (prefix with ! to filter out)");
+
+    auto layout = new QVBoxLayout();
+    layout->addWidget(txtFilter_);
+    layout->addWidget(dtv_);
+    setLayout(layout);
+    connect(txtFilter_, &QLineEdit::returnPressed, this, &DiffView::onFilterSubmitted);
 }
 
-void DiffView::updateDiff()
+QString DiffView::getFilter()
 {
-    static_cast<DiffTreeModel*>(model())->updateDiff();
+    return txtFilter_->text();
+}
+
+void DiffView::setFilter(QString f)
+{
+    txtFilter_->setText(f);
+}
+
+void DiffView::onFilterSubmitted()
+{
+    emit filterSubmitted(getFilter());
 }

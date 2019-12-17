@@ -74,7 +74,8 @@ out:
 
 int DiffTreeModel::columnCount(const QModelIndex &parent) const
 {
-    return 1;
+    Q_UNUSED(parent);
+    return 2;
 }
 
 QVariant DiffTreeModel::data(const QModelIndex &index, int role) const
@@ -106,9 +107,9 @@ QVariant DiffTreeModel::headerData(int section, Qt::Orientation orientation,
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
         switch (section) {
         case 0:
-            return "Text";
-        default:
-            return "foo";
+            return "id";
+        case 1:
+            return "name";
         }
     }
     return QVariant();

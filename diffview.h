@@ -1,17 +1,30 @@
-// SPDX-License-Identifier: GPL-3.0
 #ifndef DIFFVIEW_H
 #define DIFFVIEW_H
 
-#include <QTreeView>
-#include <QObject>
+#include <QFrame>
+#include "difftreeview.h"
+#include "diff.h"
 
-class DiffView : public QTreeView
+class DiffView : public QFrame
 {
     Q_OBJECT
 public:
-    explicit DiffView(QWidget *parent = 0);
-    DiffView();
-    void updateDiff();
+    DiffView(QWidget* w);
+    DiffTreeView* getDiffTreeView() { return dtv_; }
+    void updateDiff() { dtv_->updateDiff(); }
+    QString getFilter();
+    void setFilter(QString f);
+
+signals:
+    void filterSubmitted(QString filt);
+
+private:
+    DiffTreeView* dtv_;
+    QLineEdit* txtFilter_;
+
+private slots:
+    void onFilterSubmitted();
+
 };
 
 #endif // DIFFVIEW_H

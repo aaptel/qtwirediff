@@ -4,7 +4,7 @@
 
 #include <QVector>
 #include "trace.h"
-
+#include "difffilterlist.h"
 
 struct DiffNode {
     int type;
@@ -23,6 +23,7 @@ struct DiffNode {
     }
 };
 
-void computeDiff(QVector<DiffNode>& res, Trace::Node* na, Trace::Node* nb);
+class DiffFilterList;
+void computeDiff(QVector<DiffNode>& res, Trace::Node* na, Trace::Node* nb, const DiffFilterList& filt);
 
 #endif // DIFF_H

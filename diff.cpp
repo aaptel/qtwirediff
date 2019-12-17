@@ -3,19 +3,32 @@
 #include "dtl/dtl.hpp"
 #include <vector>
 
-static void flattenForDiff(std::vector<DiffNode>& vec, Trace::Node *n)
+static void flattenForDiff(std::vector<DiffNode>& vec, Trace::Node *n, const DiffFilterList& filt, bool whiteParent = false)
 {
-    vec.push_back({0,n});
+    DiffNode dn = {0, n};
+    bool white = filt.isWhitelisted(dn);
+    bool black = filt.isBlacklisted(dn);
+
+    if (black)
+        return;
+
+    if (!n->parent) {
+        vec.push_back(dn);
+    } else if (white || whiteParent) {
+        vec.push_back(dn);
+        whiteParent = true;
+    }
+
     for (int i = 0; i < n->children.size(); i++) {
-        flattenForDiff(vec, n->children[i]);
+        flattenForDiff(vec, n->children[i], filt, whiteParent);
     }
 }
 
-void computeDiff(QVector<DiffNode>& res, Trace::Node* na, Trace::Node* nb)
+void computeDiff(QVector<DiffNode>& res, Trace::Node* na, Trace::Node* nb, const DiffFilterList& filt)
 {
     std::vector<DiffNode> a, b;
-    flattenForDiff(a, na);
-    flattenForDiff(b, nb);
+    flattenForDiff(a, na, filt);
+    flattenForDiff(b, nb, filt);
 
     dtl::Diff<DiffNode> diff(a, b);
     diff.compose();

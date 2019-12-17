@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 #include <QMessageBox>
+#include <QWindow>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "trace.h"
@@ -27,7 +28,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(traceLeft, &TraceView::packetChanged, this, &MainWindow::onPacketChange);
     connect(traceRight, &TraceView::packetChanged, this, &MainWindow::onPacketChange);
-
+    connect(diffview, &DiffView::filterSubmitted, this, [this](QString f) {
+        Q_UNUSED(f);
+        onPacketChange(nullptr);
+    });
     reloadSessionMenu();
 }
 
@@ -80,8 +84,9 @@ void MainWindow::onPacketChange(TraceView* tv)
 
     diff.clear();
     if (left && right)
-        computeDiff(diff, left, right);
+        computeDiff(diff, left, right, diffview->getFilter());
     diffview->updateDiff();
+
     updateSession();
 }
 

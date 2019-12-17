@@ -5,11 +5,14 @@
 #include <QMainWindow>
 #include "traceview.h"
 #include "diff.h"
+#include "difftreeview.h"
 #include "diffview.h"
 #include "session.h"
 
 class Trace;
 class QTableView;
+class DiffView;
+class DiffTreeView;
 
 namespace Ui {
 class MainWindow;
@@ -25,8 +28,7 @@ public:
     QVector<DiffNode>* getDiff() { return &diff; }
     void moveSelection(int dir);
     ~MainWindow();
-    DiffView* getDiffView() { return diffview; }
-
+    DiffTreeView* getDiffTreeView() { return diffview->getDiffTreeView(); }
     void updateSession();
     void reloadSessionMenu();
 
