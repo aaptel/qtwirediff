@@ -140,7 +140,9 @@ void TraceView::asyncOpen(QString fn, QString filter)
     });
     futureTrace = QtConcurrent::run([=]() {
         Trace* trace = new Trace();
-        trace->loadTrace(fn, filter);
+        if (trace->loadTrace(fn, filter) < 0) {
+	    qDebug("load trace failed");
+	}
         return trace;
     });
     watcherTrace->setFuture(futureTrace);
