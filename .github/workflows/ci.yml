@@ -16,7 +16,7 @@ jobs:
     - name: install deps
       run: sudo apt-get install build-essential qt5-default tshark 
     - name: qmake
-      run: qmake-qt5
+      run: qmake
     - name: make
       run: make
 
