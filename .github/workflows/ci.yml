@@ -1,0 +1,22 @@
+name: Wirediff CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: install deps
+      run: sudo apt-get install build-essential qt5-default tshark 
+    - name: qmake
+      run: qmake
+    - name: make
+      run: make
+
