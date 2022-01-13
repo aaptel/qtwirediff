@@ -29,3 +29,6 @@ Alternatively you can open the .pro file in QtCreator and build from
 there.
 
 
+Running
+========
+WireDiff reads standard PCAP files. It requires "tshark" on the path.
