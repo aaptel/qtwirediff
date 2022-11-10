@@ -5,6 +5,7 @@
 #include <QBuffer>
 #include <QDebug>
 #include <functional>
+#include <QProcessEnvironment>
 
 int Trace::loadTrace(const QString &fn, const QString &filter)
 {
@@ -12,13 +13,19 @@ int Trace::loadTrace(const QString &fn, const QString &filter)
     filter_ = filter;
 
     QProcess proc;
+    QProcessEnvironment env;
     QStringList args;
+
+    // can't handle user defined gui.column.format in preferences
+    env = QProcessEnvironment::systemEnvironment();
+    env.insert("WIRESHARK_CONFIG_DIR", "invalid");
 
     args << "-r" << fn_;
     if (!filter_.isEmpty())
         args << "-Y" << filter;
     args << "-T" << "psml";
 
+    proc.setProcessEnvironment(env);
     proc.start("tshark", args, QProcess::ReadOnly);
     proc.waitForStarted();
     proc.waitForFinished();
