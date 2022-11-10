@@ -33,7 +33,7 @@ public:
         static void releaseNodeHierarchy(Node *);
     };
 
-    class ParseError : public QtConcurrent::Exception
+    class ParseError : public QException
     {
     public:
         void raise() const { throw *this; }
