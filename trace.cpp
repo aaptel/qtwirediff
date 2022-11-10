@@ -12,14 +12,21 @@ int Trace::loadTrace(const QString &fn, const QString &filter)
     filter_ = filter;
 
     QProcess proc;
+    QString tshark;
     QStringList args;
+
+    #if (defined(Q_OS_WINDOWS))
+        tshark = "tshark.exe";
+    #else
+        tshark = "tshark";
+    #endif
 
     args << "-r" << fn_;
     if (!filter_.isEmpty())
         args << "-Y" << filter;
     args << "-T" << "psml";
 
-    proc.start("tshark", args, QProcess::ReadOnly);
+    proc.start(tshark, args, QProcess::ReadOnly);
     proc.waitForStarted();
     proc.waitForFinished();
 
@@ -159,13 +166,20 @@ void Trace::dump()
 QByteArray* Trace::getPDML(int no)
 {
     QProcess proc;
+    QString tshark;
     QStringList args;
+
+    #if (defined(Q_OS_WINDOWS))
+        tshark = "tshark.exe";
+    #else
+        tshark = "tshark";
+    #endif
 
     args << "-r" << fn_;
     args << "-Y" << (QString("frame.number == %1").arg(no));
     args << "-T" << "pdml";
 
-    proc.start("tshark", args, QProcess::ReadOnly);
+    proc.start(tshark, args, QProcess::ReadOnly);
     proc.waitForStarted();
     proc.waitForFinished();
 
