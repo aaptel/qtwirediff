@@ -5,6 +5,7 @@
 #include <QBuffer>
 #include <QDebug>
 #include <functional>
+#include <QProcessEnvironment>
 
 int Trace::loadTrace(const QString &fn, const QString &filter)
 {
@@ -14,18 +15,22 @@ int Trace::loadTrace(const QString &fn, const QString &filter)
     QProcess proc;
     QString tshark;
     QStringList args;
-
+    QProcessEnvironment env;
     #if (defined(Q_OS_WINDOWS))
         tshark = "tshark.exe";
     #else
         tshark = "tshark";
     #endif
 
+    // can't handle user defined gui.column.format in preferences
+    env = QProcessEnvironment::systemEnvironment();
+    env.insert("WIRESHARK_CONFIG_DIR", "invalid");
     args << "-r" << fn_;
     if (!filter_.isEmpty())
         args << "-Y" << filter;
     args << "-T" << "psml";
 
+    proc.setProcessEnvironment(env);
     proc.start(tshark, args, QProcess::ReadOnly);
     proc.waitForStarted();
     proc.waitForFinished();
@@ -49,44 +54,44 @@ int Trace::loadTrace(const QString &fn, const QString &filter)
         return -1;
 
     if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "No.")) {
-	qDebug("bad section, expected no");
-	return -1;
+        qDebug("bad section, expected no");
+        return -1;
     }
     xml.skipCurrentElement();
 
     if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "Time")) {
-	qDebug("bad section, expected time");
-	return -1;
+        qDebug("bad section, expected time");
+        return -1;
     }
     xml.skipCurrentElement();
 
     if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "Source")) {
-	qDebug("bad section, expected source");
-	return -1;
+        qDebug("bad section, expected source");
+        return -1;
     }
     xml.skipCurrentElement();
 
     if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "Destination")) {
-	qDebug("bad section, expected destination");
-	return -1;
+        qDebug("bad section, expected destination");
+        return -1;
     }
     xml.skipCurrentElement();
 
     if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "Protocol")) {
-	qDebug("bad section, expected protocol");
-	return -1;
+        qDebug("bad section, expected protocol");
+        return -1;
     }
     xml.skipCurrentElement();
 
     if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "Length")) {
-	qDebug("bad section, expected length");
-	return -1;
+        qDebug("bad section, expected length");
+        return -1;
     }
     xml.skipCurrentElement();
 
     if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "Info")) {
-	qDebug("bad section, expected info");
-	return -1;
+        qDebug("bad section, expected info");
+        return -1;
     }
     xml.skipCurrentElement();
 
