@@ -46,50 +46,50 @@ int Trace::loadTrace(const QString &fn, const QString &filter)
 
     if (!xml.readNextStartElement())
         return -1;
-    if (xml.name() != "psml")
+    if (xml.name() != QString("psml"))
         return -1;
     if (!xml.readNextStartElement())
         return -1;
-    if (xml.name() != "structure")
+    if (xml.name() != QString("structure"))
         return -1;
 
-    if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "No.")) {
+    if (!(xml.readNextStartElement() && xml.name() == QString("section") && xml.readNext() && xml.text() == QString("No."))) {
         qDebug("bad section, expected no");
         return -1;
     }
     xml.skipCurrentElement();
 
-    if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "Time")) {
+    if (!(xml.readNextStartElement() && xml.name() == QString("section") && xml.readNext() && xml.text() == QString("Time"))) {
         qDebug("bad section, expected time");
         return -1;
     }
     xml.skipCurrentElement();
 
-    if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "Source")) {
+    if (!(xml.readNextStartElement() && xml.name() == QString("section") && xml.readNext() && xml.text() == QString("Source"))) {
         qDebug("bad section, expected source");
         return -1;
     }
     xml.skipCurrentElement();
 
-    if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "Destination")) {
+    if (!(xml.readNextStartElement() && xml.name() == QString("section") && xml.readNext() && xml.text() == QString("Destination"))) {
         qDebug("bad section, expected destination");
         return -1;
     }
     xml.skipCurrentElement();
 
-    if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "Protocol")) {
+    if (!(xml.readNextStartElement() && xml.name() == QString("section") && xml.readNext() && xml.text() == QString("Protocol"))) {
         qDebug("bad section, expected protocol");
         return -1;
     }
     xml.skipCurrentElement();
 
-    if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "Length")) {
+    if (!(xml.readNextStartElement() && xml.name() == QString("section") && xml.readNext() && xml.text() == QString("Length"))) {
         qDebug("bad section, expected length");
         return -1;
     }
     xml.skipCurrentElement();
 
-    if (!(xml.readNextStartElement() && xml.name() == "section" && xml.readNext() && xml.text() == "Info")) {
+    if (!(xml.readNextStartElement() && xml.name() == QString("section") && xml.readNext() && xml.text() == QString("Info"))) {
         qDebug("bad section, expected info");
         return -1;
     }
@@ -104,48 +104,48 @@ int Trace::loadTrace(const QString &fn, const QString &filter)
     }
     int i = 0;
     do {
-        if (xml.name() != "packet")
+        if (xml.name() != QString("packet"))
             return -1;
         pkts_.append(Summary());
 
-        if (!xml.readNextStartElement() || xml.name() != "section")
+        if (!xml.readNextStartElement() || xml.name() != QString("section"))
             return -1;
         xml.readNext();
         pkts_[i].no = xml.text().toInt();
         xml.skipCurrentElement();
 
-        if (!xml.readNextStartElement() || xml.name() != "section")
+        if (!xml.readNextStartElement() || xml.name() != QString("section"))
             return -1;
         xml.readNext();
         pkts_[i].time = xml.text().toDouble();
         xml.skipCurrentElement();
 
-        if (!xml.readNextStartElement() || xml.name() != "section")
+        if (!xml.readNextStartElement() || xml.name() != QString("section"))
             return -1;
         xml.readNext();
         pkts_[i].src = xml.text().toString();
         xml.skipCurrentElement();
 
-        if (!xml.readNextStartElement() || xml.name() != "section")
+        if (!xml.readNextStartElement() || xml.name() != QString("section"))
             return -1;
         xml.readNext();
         pkts_[i].dst = xml.text().toString();
         xml.skipCurrentElement();
 
-        if (!xml.readNextStartElement() || xml.name() != "section")
+        if (!xml.readNextStartElement() || xml.name() != QString("section"))
             return -1;
         xml.readNext();
         pkts_[i].proto = xml.text().toString();
         xml.skipCurrentElement();
 
-        if (!xml.readNextStartElement() || xml.name() != "section")
+        if (!xml.readNextStartElement() || xml.name() != QString("section"))
             return -1;
         xml.readNext();
         // we don't care about length
         //pkts_[i].src = xml.text();
         xml.skipCurrentElement();
 
-        if (!xml.readNextStartElement() || xml.name() != "section")
+        if (!xml.readNextStartElement() || xml.name() != QString("section"))
             return -1;
         xml.readNext();
         pkts_[i].info = xml.text().toString();
@@ -248,12 +248,12 @@ static Trace::Node* parseNode(QXmlStreamReader& xml)
         throw Trace::ParseError();
     }
 
-    if (xml.name() == "packet") {
+    if (xml.name() == QString("packet")) {
         n->name = "root";
         n->val = "";
         n->parent = nullptr;
     } else {
-        if (xml.name() != "proto" && xml.name() != "field") {
+        if (xml.name() != QString("proto") && xml.name() != QString("field")) {
             qDebug("not at <proto> or <field>");
             throw Trace::ParseError();
         }
@@ -283,11 +283,11 @@ Trace::Node* Trace::getPacket(int no)
 
         if (!xml.readNextStartElement())
             throw ParseError();
-        if (xml.name() != "pdml")
+        if (xml.name() != QString("pdml"))
             throw ParseError();
         if (!xml.readNextStartElement())
             throw ParseError();
-        if (xml.name() != "packet")
+        if (xml.name() != QString("packet"))
             throw ParseError();
 
         cache_.insert(no, new Trace::Tree(parseNode(xml)));

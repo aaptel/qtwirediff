@@ -8,7 +8,7 @@ class SessionItem : public QAction
     Q_OBJECT
     public:
     Session ses_;
-    SessionItem(QWidget* p=0, Session* ses=0);
+    SessionItem(QObject* p=0, Session* ses=0);
 };
 
 #endif // SESSIONITEM_H
