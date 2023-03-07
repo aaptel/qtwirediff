@@ -13,20 +13,25 @@ int Trace::loadTrace(const QString &fn, const QString &filter)
     filter_ = filter;
 
     QProcess proc;
-    QProcessEnvironment env;
+    QString tshark;
     QStringList args;
+    QProcessEnvironment env;
+    #if (defined(Q_OS_WINDOWS))
+        tshark = "tshark.exe";
+    #else
+        tshark = "tshark";
+    #endif
 
     // can't handle user defined gui.column.format in preferences
     env = QProcessEnvironment::systemEnvironment();
     env.insert("WIRESHARK_CONFIG_DIR", "invalid");
-
     args << "-r" << fn_;
     if (!filter_.isEmpty())
         args << "-Y" << filter;
     args << "-T" << "psml";
 
     proc.setProcessEnvironment(env);
-    proc.start("tshark", args, QProcess::ReadOnly);
+    proc.start(tshark, args, QProcess::ReadOnly);
     proc.waitForStarted();
     proc.waitForFinished();
 
@@ -166,13 +171,20 @@ void Trace::dump()
 QByteArray* Trace::getPDML(int no)
 {
     QProcess proc;
+    QString tshark;
     QStringList args;
+
+    #if (defined(Q_OS_WINDOWS))
+        tshark = "tshark.exe";
+    #else
+        tshark = "tshark";
+    #endif
 
     args << "-r" << fn_;
     args << "-Y" << (QString("frame.number == %1").arg(no));
     args << "-T" << "pdml";
 
-    proc.start("tshark", args, QProcess::ReadOnly);
+    proc.start(tshark, args, QProcess::ReadOnly);
     proc.waitForStarted();
     proc.waitForFinished();
 
