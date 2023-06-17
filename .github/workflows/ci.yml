@@ -5,18 +5,82 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
+
+env:
+  QT_VERSION: 5.15.2
 
 jobs:
-  build:
+  build_ubuntu:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: install deps
-      run: sudo apt-get install build-essential qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools tshark
-    - name: qmake
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        host: linux
+        target: desktop
+        version: ${{ env.QT_VERSION }}
+        arch: gcc_64
+    - name: Create Makefile
       run: qmake
-    - name: make
+    - name: Build
       run: make
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Wirediff (Ubuntu)
+        path: qtwirediff
 
+  build_windows:
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        host: windows
+        target: desktop
+        version: ${{ env.QT_VERSION }}
+        arch: win64_msvc2019_64
+    - name: Set MSVC command prompt
+      uses: ilammy/msvc-dev-cmd@v1
+    - name: Create Makefile
+      run: qmake
+    - name: Build
+      run: nmake
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Wirediff (Windows)
+        path: release/qtwirediff.exe
+
+  build_macos:
+
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        host: mac
+        target: desktop
+        version: ${{ env.QT_VERSION }}
+        arch: clang_64
+    - name: Create Makefile
+      run: qmake
+    - name: Build
+      run: make
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Wirediff (macOS)
+        path: qtwirediff.app
