@@ -3,6 +3,7 @@ name: Wirediff CI
 on:
   push:
     branches: [ master ]
+    tags: 'v*'
   pull_request:
     branches: [ master ]
   workflow_dispatch:
@@ -30,7 +31,7 @@ jobs:
     - name: Build
       run: make
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Wirediff (Ubuntu)
         path: qtwirediff
@@ -55,12 +56,23 @@ jobs:
       run: qmake
     - name: Build
       run: nmake
+    - name: Create install directory
+      run: mkdir windows_dist
+    - name: Copy executable
+      run: copy .\release\qtwirediff.exe windows_dist
+    - name: Create distrabution
+      run: windeployqt windows_dist\qtwirediff.exe
+    - name: Create zip
+      run: 7z a qtwirediff_windows_dist.zip .\windows_dist
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Wirediff (Windows)
-        path: release/qtwirediff.exe
+        path: |
+          release/qtwirediff.exe
+          qtwirediff_windows_dist.zip
 
+  
   build_macos:
 
     runs-on: macos-latest
@@ -80,7 +92,29 @@ jobs:
     - name: Build
       run: make
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Wirediff (macOS)
         path: qtwirediff.app
+
+  release:
+      needs: [build_ubuntu, build_macos, build_windows]
+      if: startsWith(github.ref, 'refs/tags/')
+      runs-on: ubuntu-latest
+      permissions:
+        contents: write
+      steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+      - run: tree ./dist
+      - run: mv "./dist/Wirediff (macOS)/Contents/MacOS/qtwirediff" ./dist/qtwirediff_mac
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
+        with:
+          draft: true
+          files: |
+            dist/**/qtwirediff*
+            
